@@ -1,0 +1,421 @@
+﻿<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Catalogue API - İdarəetmə Paneli</title>
+    <style>
+        :root {
+            --bg: #E5D9E8; /* Serene Lilac */
+            --card: #FFFFFF; /* Təmiz ağ kartlar */
+            --soft-lavender: #BDB0C2; /* Lavender */
+            --charcoal: #4F5464; /* Charcoal */
+            --eucalyptus: #AABAA8; /* Eucalyptus */
+            --border: #D5C8D9;
+            --danger: #C96A6A;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--charcoal);
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1150px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: var(--card);
+            padding: 20px 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(79, 84, 100, 0.08);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 26px;
+            color: var(--charcoal);
+            letter-spacing: 0.5px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+        }
+
+        .panel {
+            background: var(--card);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(79, 84, 100, 0.08);
+        }
+
+            .panel h2 {
+                margin-top: 0;
+                font-size: 18px;
+                color: var(--charcoal);
+                border-bottom: 2px solid var(--bg);
+                padding-bottom: 12px;
+            }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--charcoal);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            margin: 6px 0 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: #FAF7FB;
+            color: var(--charcoal);
+            outline: none;
+            transition: 0.2s;
+        }
+
+            input:focus, select:focus, textarea:focus {
+                border-color: var(--soft-lavender);
+                background: #FFFFFF;
+            }
+
+        button {
+            background: var(--charcoal);
+            color: #FFFFFF;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+            button:hover {
+                background: #3D414E;
+            }
+
+        .btn-lavender {
+            background: var(--soft-lavender);
+            color: var(--charcoal);
+        }
+
+            .btn-lavender:hover {
+                background: #AE9FB4;
+            }
+
+        .btn-eucalyptus {
+            background: var(--eucalyptus);
+            color: var(--charcoal);
+        }
+
+            .btn-eucalyptus:hover {
+                background: #96A994;
+            }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+            padding: 7px 12px;
+            font-size: 13px;
+        }
+
+            .btn-danger:hover {
+                background: #B55656;
+            }
+
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+            .toolbar input, .toolbar select {
+                margin: 0;
+                width: auto;
+                flex: 1;
+                min-width: 140px;
+            }
+
+        .movie-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 16px;
+        }
+
+        .movie-card {
+            background: #FAF7FB;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s;
+        }
+
+            .movie-card:hover {
+                transform: translateY(-2px);
+                border-color: var(--soft-lavender);
+            }
+
+            .movie-card h3 {
+                margin: 0 0 8px;
+                color: var(--charcoal);
+                font-size: 18px;
+            }
+
+            .movie-card p {
+                font-size: 14px;
+                color: #6B7082;
+                margin: 0 0 14px;
+                line-height: 1.4;
+            }
+
+        .meta {
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+            color: var(--charcoal);
+            font-weight: 500;
+        }
+
+        .genre-tag {
+            background: var(--eucalyptus);
+            color: var(--charcoal);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        #errorBox {
+            color: #7F1D1D;
+            background: #FEE2E2;
+            border: 1px solid #FCA5A5;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: none;
+            font-size: 13px;
+        }
+
+        #successBox {
+            color: #14532D;
+            background: #DCFCE7;
+            border: 1px solid #86EFAC;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: none;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>🎬 Movie Catalogue</h1>
+                <small style="color: #6B7082;">ASP.NET Core Web API İdarəetmə Paneli</small>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <a href="/openapi/v1.json" target="_blank"><button type="button" class="btn-lavender">📄 OpenAPI JSON</button></a>
+                <a href="/api/movies/export"><button type="button" class="btn-eucalyptus">⬇️ JSON İxrac Et</button></a>
+            </div>
+        </header>
+
+        <div class="grid">
+            <div class="panel">
+                <h2>➕ Yeni Premyera Əlavə Et</h2>
+                <div id="errorBox"></div>
+                <div id="successBox"></div>
+
+                <label>Filmin Adı</label>
+                <input type="text" id="title" placeholder="Məs: Avatar 4">
+
+                <label>Janr</label>
+                <select id="genre">
+                    <option value="Sci-Fi">Sci-Fi</option>
+                    <option value="Action">Action</option>
+                    <option value="Drama">Drama</option>
+                    <option value="Comedy">Comedy</option>
+                    <option value="Horror">Horror</option>
+                </select>
+
+                <label>Premyera Tarixi (Gələcək tarix)</label>
+                <input type="datetime-local" id="releaseDate">
+
+                <label>Bilet Sayı</label>
+                <input type="number" id="tickets" value="120" min="1">
+
+                <label>Qısa Təsvir</label>
+                <textarea id="description" rows="3" placeholder="Film haqqında məlumat..."></textarea>
+
+                <button type="button" style="width: 100%;" onclick="addMovie()">Kataloqa Əlavə Et</button>
+            </div>
+
+            <div class="panel">
+                <h2>🎞️ Mövcud Filmlər</h2>
+                <div class="toolbar">
+                    <input type="text" id="searchInput" placeholder="Ada görə axtar..." onkeyup="searchMovies()">
+
+                    <select id="genreFilter" onchange="filterByGenre()">
+                        <option value="">Bütün Janrlar</option>
+                        <option value="Sci-Fi">Sci-Fi</option>
+                        <option value="Action">Action</option>
+                        <option value="Drama">Drama</option>
+                        <option value="Comedy">Comedy</option>
+                        <option value="Horror">Horror</option>
+                    </select>
+
+                    <button type="button" class="btn-lavender" onclick="resetFilters()">Hamısı</button>
+                    <button type="button" class="btn-eucalyptus" onclick="loadMovies('/api/movies/sorted')">📅 Tarixə görə</button>
+                    <button type="button" class="btn-eucalyptus" onclick="loadMovies('/api/movies/large-premiere')">🎟️ 100+ Bilet</button>
+                </div>
+                <div class="movie-list" id="movieList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const apiUrl = '/api/movies';
+
+    window.onload = function() {
+        document.getElementById('releaseDate').value = "2027-06-15T20:00";
+        loadMovies();
+    };
+
+    async function loadMovies(endpoint = apiUrl) {
+        try {
+            const res = await fetch(endpoint);
+            if (!res.ok) return;
+            const movies = await res.json();
+            const container = document.getElementById('movieList');
+            container.innerHTML = '';
+
+            if (movies.length === 0) {
+                container.innerHTML = '<p style="color: #6B7082;">Heç bir film tapılmadı.</p>';
+                return;
+            }
+
+            movies.forEach(m => {
+                const date = new Date(m.releaseDate).toLocaleDateString('az-AZ', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                container.innerHTML += `
+                    <div class="movie-card">
+                        <div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                                <span class="genre-tag">${m.genre}</span>
+                                <small style="color:#6B7082; font-weight:600;">ID: #${m.id}</small>
+                            </div>
+                            <h3>${m.title}</h3>
+                            <p>${m.description || 'Təsvir yoxdur'}</p>
+                        </div>
+                        <div>
+                            <div class="meta">
+                                <span>📅 ${date}</span>
+                                <span>🎟️ ${m.availableTickets} bilet</span>
+                            </div>
+                            <button type="button" class="btn-danger" style="width:100%" onclick="deleteMovie(${m.id})">Sil</button>
+                        </div>
+                    </div>
+                `;
+            });
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function addMovie() {
+        const errorBox = document.getElementById('errorBox');
+        const successBox = document.getElementById('successBox');
+        errorBox.style.display = 'none';
+        successBox.style.display = 'none';
+
+        const titleVal = document.getElementById('title').value.trim();
+        const dateVal = document.getElementById('releaseDate').value;
+        const ticketsVal = parseInt(document.getElementById('tickets').value);
+
+        if (!dateVal) {
+            errorBox.innerText = "Zəhmət olmasa premyera tarixini seçin!";
+            errorBox.style.display = 'block';
+            return;
+        }
+
+        const movie = {
+            title: titleVal,
+            genre: document.getElementById('genre').value,
+            releaseDate: dateVal,
+            availableTickets: isNaN(ticketsVal) ? 0 : ticketsVal,
+            description: document.getElementById('description').value
+        };
+
+        try {
+            const res = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(movie)
+            });
+
+            if (!res.ok) {
+                const err = await res.json();
+                errorBox.innerText = err.message || 'Xəta baş verdi! Məlumatları yoxlayın.';
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            successBox.innerText = "Film uğurla əlavə edildi!";
+            successBox.style.display = 'block';
+            document.getElementById('title').value = '';
+            document.getElementById('description').value = '';
+            loadMovies();
+        } catch (err) {
+            errorBox.innerText = "Serverlə əlaqə kəsilib.";
+            errorBox.style.display = 'block';
+        }
+    }
+
+    async function deleteMovie(id) {
+        await fetch(`${apiUrl}/${id}`, { method: 'DELETE' });
+        loadMovies();
+    }
+
+    function searchMovies() {
+        const q = document.getElementById('searchInput').value;
+        if (q.trim() === '') loadMovies();
+        else loadMovies(`${apiUrl}/search?title=${encodeURIComponent(q)}`);
+    }
+
+    function filterByGenre() {
+        const g = document.getElementById('genreFilter').value;
+        if (g === '') loadMovies();
+        else loadMovies(`${apiUrl}/genre/${encodeURIComponent(g)}`);
+    }
+
+    function resetFilters() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('genreFilter').value = '';
+        loadMovies();
+    }
+    </script>
+</body>
+</html>
